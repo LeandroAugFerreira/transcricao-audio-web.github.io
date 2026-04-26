@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transcrição de Áudio/Vídeo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-xl">
+    <h1 class="text-2xl font-bold mb-4 text-center">Transcrição de Áudio/Vídeo</h1>
+
+    <!-- Upload -->
+    <input id="fileInput" type="file" accept="audio/*,video/*" 
+      class="w-full mb-4 p-2 border rounded" />
+
+    <!-- Botão -->
+    <button onclick="uploadFile()" 
+      class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+      Transcrever
+    </button>
+
+    <!-- Status -->
+    <p id="status" class="mt-4 text-sm text-gray-600"></p>
+
+    <!-- Resultado -->
+    <textarea id="result" rows="10" 
+      class="w-full mt-4 p-2 border rounded" 
+      placeholder="O texto transcrito aparecerá aqui..."></textarea>
+  </div>
+
+  <script>
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
+      const result = document.getElementById('result');
+
+      if (!fileInput.files.length) {
+        alert('Selecione um arquivo primeiro');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      status.innerText = 'Enviando arquivo...';
+
+      try {
+        const response = await fetch('http://localhost:5000/transcribe', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        status.innerText = 'Transcrição concluída!';
+        result.value = data.text;
+
+      } catch (error) {
+        status.innerText = 'Erro ao processar arquivo.';
+        console.error(error);
+      }
+    }
+  </script>
+
+</body>
+</html>
 
